@@ -1,0 +1,26 @@
+@font-face{font-family:Editors;src:url('assets/editors-note-regular.woff2');font-display:swap}
+*{box-sizing:border-box;letter-spacing:.02em}
+html{scroll-behavior:smooth}
+body{margin:0;background:#FBFAF7;color:#2F2D2E;font-family:Editors,Georgia,serif;letter-spacing:.02em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid #355070;outline-offset:5px}
+.story{position:relative}
+/* Copy shares the opening viewport with the component's single pinned SVG. */
+.opening-hero{position:absolute;inset:0 0 auto;height:100svh;z-index:2;text-align:center;pointer-events:none}
+.opening-copy{padding:clamp(32px,6svh,70px) 7vw 0;will-change:opacity,transform}
+.opening-copy h1{font-weight:400;font-size:clamp(36px,4.2vw,60px);letter-spacing:.02em;line-height:1.2;margin:12px auto 24px;text-wrap:balance}
+.opening-copy p{font-size:clamp(20px,2.1vw,28px);line-height:1.45;max-width:890px;margin:0 auto;text-wrap:balance}
+.scroll-cue{position:absolute;top:62%;left:50%;transform:translateX(-50%);width:max-content;font-size:20px;pointer-events:auto;will-change:opacity}
+.scroll-cue svg{display:block;width:27px;height:43px;margin:16px auto}
+inbrnd-flywheel{display:block}
+/* Motion-free reading has normal document flow, no long pinned scroll. */
+.opening-hero:has(+inbrnd-flywheel[data-static]){position:relative;height:auto;min-height:0;padding-bottom:40px}
+.opening-hero:has(+inbrnd-flywheel[data-static]) .opening-copy{opacity:1!important;transform:none!important}
+.opening-hero:has(+inbrnd-flywheel[data-static]) .scroll-cue{position:relative;display:block;top:auto;left:auto;transform:none;width:fit-content;margin:40px auto 0;opacity:1!important}
+@media(max-width:700px){
+ .opening-hero{height:100svh}
+ .opening-copy{padding:36px 6vw 0}.opening-copy h1{font-size:36px;margin:12px auto 24px;max-width:440px}
+ .opening-copy p{font-size:20px;max-width:480px}.scroll-cue{font-size:18px;top:65%}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.opening-copy,.scroll-cue{will-change:auto}}
