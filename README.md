@@ -22,12 +22,11 @@ Local visits to the root URL automatically open `/framework/`. The published roo
 
 ## Framework custom element (including Wix)
 
-The root `inbrnd-flywheel.js` owns the opening headline, introductory text, scroll invitation and arrow, their styles, and the animated wheel. Enable the complete opening with `opening-transition="soft"`; omit it for the existing section-only presentation. `/framework/` loads this same root script. The former `/framework/inbrnd-flywheel.js` URL is retained as an identical compatibility copy. Fonts still load from `asset-base`.
+The root `inbrnd-flywheel.js` owns the opening headline, introductory text, scroll invitation and arrow, their styles, and the animated wheel. The complete opening is enabled by default, including in Wix. Set `opening-transition="none"` for the section-only presentation; `soft` remains supported explicitly. `/framework/` loads this same root script. The former `/framework/inbrnd-flywheel.js` URL is retained as an identical compatibility copy. Fonts still load from `asset-base`.
 
 For a Wix Custom Element using the root script URL, set:
 
 ```text
-opening-transition: soft
 content-mode: diagram
 heading-level: 2
 asset-base: https://inbrnd.github.io/assets/

@@ -166,6 +166,7 @@ function diagram(id) {
       this.motion=matchMedia('(prefers-reduced-motion: reduce)');
       this.userStatic=false;this.frameId=0;
     }
+    get openingEnabled(){return this.getAttribute('opening-transition')!=='none';}
     connectedCallback(){
       // Direct Wix installs default to Minimal; explicit teaching mode stays available.
       if(!this.hasAttribute('content-mode'))this.setAttribute('content-mode','diagram');
@@ -213,8 +214,8 @@ function diagram(id) {
       this.offset=Math.max(0,parseFloat(this.getAttribute('header-offset'))||0);
       this.style.setProperty('--header-offset',this.offset+'px');
       const id='inbrnd-'+(++serial),level=Math.min(6,Math.max(1,parseInt(this.getAttribute('heading-level'),10)||2)),heading='h'+level,subheading='h'+Math.min(6,level+1);
-      this.shadowRoot.innerHTML=`<style>${this.hasAttribute('opening-transition')?CSS+OPENING_CSS:SECTION_CSS}</style>
-        ${this.hasAttribute('opening-transition')?`<section class="opening-hero" aria-labelledby="${id}-headline"><div class="opening-copy"><h1 id="${id}-headline">Career as a Brand System™</h1><p>A structured approach to turning your experience into clear positioning, credible signals, and compounding opportunities.</p></div><a class="scroll-cue" href="#system">Scroll to explore the system<svg viewBox="0 0 32 48" aria-hidden="true"><path d="M16 4 V35" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><path d="M-13 -8 L2 0 L-13 8 Z" transform="translate(16 37) rotate(90)" fill="currentColor"/></svg></a></section>`:''}
+      this.shadowRoot.innerHTML=`<style>${this.openingEnabled?CSS+OPENING_CSS:SECTION_CSS}</style>
+        ${this.openingEnabled?`<section class="opening-hero" aria-labelledby="${id}-headline"><div class="opening-copy"><h1 id="${id}-headline">Career as a Brand System™</h1><p>A structured approach to turning your experience into clear positioning, credible signals, and compounding opportunities.</p></div><a class="scroll-cue" href="#system">Scroll to explore the system<svg viewBox="0 0 32 48" aria-hidden="true"><path d="M16 4 V35" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><path d="M-13 -8 L2 0 L-13 8 Z" transform="translate(16 37) rotate(90)" fill="currentColor"/></svg></a></section>`:''}
         <div class="sr-only accessible-summary"><${heading}>The system in motion</${heading}><p>${SUMMARY}</p><ol>${STAGES.map(s=>`<li><${subheading}>${s[0]}</${subheading}><p>${s[1]} ${s[2]}</p></li>`).join('')}</ol><p>${PAYOFF}</p></div>
         <section class="journey" id="system" aria-label="The system in motion"><div class="frame">
           <div class="copy" aria-hidden="true">${STAGES.map((s,i)=>`<article class="lesson" data-lesson="${i}"><h2>${s[0]}</h2><p class="question">${s[1]}</p><p class="description">${s[2]}</p></article>`).join('')}</div>
@@ -232,7 +233,7 @@ function diagram(id) {
       this.panels=[...r.querySelectorAll('.lesson')];
       this.openingCopy=r.querySelector('.opening-copy');this.scrollCue=r.querySelector('.scroll-cue');
       // Opt-in opening: keep the existing SVG and assembly timeline as one object.
-      if(this.hasAttribute('opening-transition')) {
+      if(this.openingEnabled) {
         const style=document.createElement('style');
         style.textContent='.journey{height:calc(100svh + 540svh);border-top:0}.frame{overflow:clip}.visual-wrap{will-change:transform}';
         r.append(style);
@@ -266,7 +267,7 @@ function diagram(id) {
       }
       const rect=this.journey.getBoundingClientRect(),travel=this.journey.offsetHeight-this.frame.offsetHeight;
       const raw=clamp((-rect.top+this.offset)/Math.max(1,travel));
-      const opening=this.hasAttribute('opening-transition');
+      const opening=this.openingEnabled;
       // The first idea emerges while the circle settles, so there is no handoff.
       const entrance=opening?1-Math.pow(1-clamp(raw/.17),2):1;
       const openingPaint=openingState(raw);

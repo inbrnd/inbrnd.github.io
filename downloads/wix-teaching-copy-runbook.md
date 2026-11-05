@@ -1,8 +1,8 @@
 # INBRND Wix installation: Flywheel with stage explanations
 
-## Optional complete Framework opening
+## Default complete Framework opening
 
-Set `opening-transition` to `soft` to include the headline, introductory text, scroll invitation, arrow, and wheel in the custom element itself. The root `inbrnd-flywheel.js` owns their markup, styling, and animation; no separate `app.js` or page CSS is required. The section-only instructions below apply when this attribute is omitted. Fonts still require `asset-base`. Publish the updated script before testing this attribute on Wix.
+Without any `opening-transition` attribute, the custom element includes the headline, introductory text, scroll invitation, arrow, and wheel in the custom element itself. The root `inbrnd-flywheel.js` owns their markup, styling, and animation; no separate `app.js` or page CSS is required. Set `opening-transition` to `none` for the section-only presentation described below. Fonts still require `asset-base`. The full opening requires no extra Wix attribute; `soft` remains supported explicitly.
 
 ## Current component scope
 
