@@ -17,3 +17,20 @@ The root page is the educational flywheel. The `minimal`, `diagram-only`, `educa
 ## Local preview
 
 Run `python3 -m http.server 8000` in this folder and open http://localhost:8000/.
+
+Local visits to the root URL automatically open `/framework/`. The published root page remains the educational version.
+
+## Framework custom element (including Wix)
+
+The root `inbrnd-flywheel.js` owns the opening headline, introductory text, scroll invitation and arrow, their styles, and the animated wheel. Enable the complete opening with `opening-transition="soft"`; omit it for the existing section-only presentation. `/framework/` loads this same root script. The former `/framework/inbrnd-flywheel.js` URL is retained as an identical compatibility copy. Fonts still load from `asset-base`.
+
+For a Wix Custom Element using the root script URL, set:
+
+```text
+opening-transition: soft
+content-mode: diagram
+heading-level: 2
+asset-base: https://inbrnd.github.io/assets/
+```
+
+No separate heading markup, page CSS, or `app.js` is required. Allow the element to grow with its content and preserve document scrolling and sticky positioning. These source changes must be published before the public Wix script URL receives them.

@@ -1,5 +1,9 @@
 # INBRND Wix installation: Flywheel with stage explanations
 
+## Optional complete Framework opening
+
+Set `opening-transition` to `soft` to include the headline, introductory text, scroll invitation, arrow, and wheel in the custom element itself. The root `inbrnd-flywheel.js` owns their markup, styling, and animation; no separate `app.js` or page CSS is required. The section-only instructions below apply when this attribute is omitted. Fonts still require `asset-base`. Publish the updated script before testing this attribute on Wix.
+
 ## Current component scope
 
 The JavaScript renders only the flywheel section. In teaching mode, this means the assembling diagram, active-stage heading/question/description, and the final payoff sentence. Version A — Minimal hides the explanations and retains the final payoff sentence. A small Read without motion control is retained. There is no introduction, closing section, site header/footer, stage-navigation row, or small diagram caption in the component.
