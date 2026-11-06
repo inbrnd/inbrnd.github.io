@@ -12,13 +12,13 @@ Enable GitHub Pages from the `main` branch and `/ (root)` folder. No build is re
 
 ## Contents
 
-The root page is the educational flywheel. The `minimal`, `diagram-only`, `educational`, `embed`, `versions`, `comparison`, and `polish-comparison` folders provide the existing variants. `before` and `pre-polish` preserve earlier work. `downloads` and `runbook` contain the Wix installation materials.
+The root page is a static landing page linking to every flywheel version. The educational flywheel remains at `/educational/`. The `minimal`, `diagram-only`, `educational`, `embed`, `versions`, `comparison`, and `polish-comparison` folders provide the existing variants. `before` and `pre-polish` preserve earlier work. `downloads` and `runbook` contain the Wix installation materials.
 
 ## Local preview
 
 Run `python3 -m http.server 8000` in this folder and open http://localhost:8000/.
 
-Local visits to the root URL automatically open `/framework/`. The published root page remains the educational version.
+Local and published root URLs both show the version directory; there is no automatic redirect.
 
 ## Framework custom element (including Wix)
 
@@ -38,7 +38,7 @@ No separate heading markup, page CSS, or `app.js` is required. Allow the element
 
 `/homepage/` is a separate homepage flywheel version. It preserves the existing
 SVG, font-aware arrow endpoints, typography and responsive diagram proportions.
-The root, Minimal, Educational and Framework pages keep their current behavior.
+Minimal, Educational and Framework pages keep their current behavior.
 
 For the homepage Wix Custom Element, use the same root script and assets with:
 
@@ -58,3 +58,12 @@ Afterward the SVG remains fully visible and static. Resize and font loading only
 realign the existing geometry. There are no hover or scroll replay controls.
 Reduced motion, unavailable IntersectionObserver, and reconnection after a start
 show the complete diagram immediately; a no-JavaScript fallback is included.
+
+## Version directory
+
+The root landing page uses `landing.css` and the existing INBRND logo, palette,
+fonts, and a static SVG specimen. It does not load or animate the custom element.
+Cards link to Framework (`/framework/`), Homepage Entrance (`/homepage/`), Minimal
+(`/minimal/`), Educational (`/educational/`), Diagram Only (`/diagram-only/`),
+Educational Embed (`/embed/`), Original (`/before/`), and Before Final Polish
+(`/pre-polish/`). Comparison and installation resources follow the cards.
