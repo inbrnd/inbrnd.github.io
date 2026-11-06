@@ -33,3 +33,28 @@ asset-base: https://inbrnd.github.io/assets/
 ```
 
 No separate heading markup, page CSS, or `app.js` is required. Allow the element to grow with its content and preserve document scrolling and sticky positioning. These source changes must be published before the public Wix script URL receives them.
+
+## Homepage entrance (Version C)
+
+`/homepage/` is a separate homepage flywheel version. It preserves the existing
+SVG, font-aware arrow endpoints, typography and responsive diagram proportions.
+The root, Minimal, Educational and Framework pages keep their current behavior.
+
+For the homepage Wix Custom Element, use the same root script and assets with:
+
+```text
+animation: entrance
+content-mode: diagram
+opening-transition: none
+heading-level: 2
+asset-base: https://inbrnd.github.io/assets/
+```
+
+The entrance uses normal page flow, without a pinned section or scroll listener.
+An IntersectionObserver starts it once at 30% section visibility: all five labels
+fade in at 0–500ms, five arrows draw clockwise at 500–1600ms (220ms each), and the
+complete burgundy ring, curved text and conclusion fade in at 1600–2300ms.
+Afterward the SVG remains fully visible and static. Resize and font loading only
+realign the existing geometry. There are no hover or scroll replay controls.
+Reduced motion, unavailable IntersectionObserver, and reconnection after a start
+show the complete diagram immediately; a no-JavaScript fallback is included.

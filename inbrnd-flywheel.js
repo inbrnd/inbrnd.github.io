@@ -157,8 +157,29 @@ function diagram(id) {
 
 .scroll-cue{text-decoration:none}.opening-hero svg{overflow:visible}
 `;
+  // Homepage-only entrance: normal document flow and a single wall-clock sequence.
+  const ENTRANCE_CSS = `
+.journey{height:auto;border-top:0}
+.frame{position:relative;top:auto;height:auto;grid-template-columns:1fr;grid-template-rows:auto}
+.copy,.linear,.tools{display:none}
+.visual-wrap{grid-column:1;grid-row:1;width:100%;align-self:center}
+.entrance-pending .node,.entrance-pending .connection,.entrance-pending .arrowhead,
+.entrance-pending .rose-segment,.entrance-pending .authority,.entrance-pending .momentum,
+.entrance-pending .payoff{opacity:0!important}
+.entrance-running .node{animation:entrance-fade .5s ease-out both}
+.entrance-running .connection{animation:entrance-draw .22s cubic-bezier(.25,.1,.25,1) both;animation-delay:var(--entrance-delay)}
+.entrance-running .arrowhead{animation:entrance-fade .04s ease-out both;animation-delay:calc(var(--entrance-delay) + .18s)}
+.entrance-running .rose-segment,.entrance-running .authority,.entrance-running .momentum,
+.entrance-running .payoff{animation:entrance-fade .7s ease-out 1.6s both}
+@keyframes entrance-fade{from{opacity:0}to{opacity:1}}
+@keyframes entrance-draw{from{opacity:1;stroke-dashoffset:100}to{opacity:1;stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){
+ .journey .node,.journey .connection,.journey .arrowhead,.journey .rose-segment,
+ .journey .authority,.journey .momentum,.journey .payoff{animation:none!important;opacity:1!important;stroke-dashoffset:0!important}
+}
+`;
   class InbrndFlywheel extends HTMLElement {
-    static get observedAttributes(){return ['variant','asset-base','header-offset','heading-level','content-mode','theme','emphasis','opening-transition'];}
+    static get observedAttributes(){return ['variant','asset-base','header-offset','heading-level','content-mode','theme','emphasis','opening-transition','animation'];}
     constructor(){
       super();this.attachShadow({mode:'open'});
       this.queue=this.queue.bind(this);this.renderFrame=this.renderFrame.bind(this);this.onClick=this.onClick.bind(this);
@@ -166,7 +187,8 @@ function diagram(id) {
       this.motion=matchMedia('(prefers-reduced-motion: reduce)');
       this.userStatic=false;this.frameId=0;
     }
-    get openingEnabled(){return this.getAttribute('opening-transition')!=='none';}
+    get entranceEnabled(){return this.getAttribute('animation')==='entrance';}
+    get openingEnabled(){return !this.entranceEnabled&&this.getAttribute('opening-transition')!=='none';}
     connectedCallback(){
       // Direct Wix installs default to Minimal; explicit teaching mode stays available.
       if(!this.hasAttribute('content-mode'))this.setAttribute('content-mode','diagram');
@@ -174,7 +196,8 @@ function diagram(id) {
       try {
         this.render();
         this.shadowRoot.addEventListener('click',this.onClick);
-        addEventListener('scroll',this.queue,{passive:true});addEventListener('resize',this.invalidate,{passive:true});
+        if(!this.entranceEnabled)addEventListener('scroll',this.queue,{passive:true});
+        addEventListener('resize',this.invalidate,{passive:true});
         this.motion.addEventListener('change',this.invalidate);
         document.fonts?.addEventListener('loadingdone',this.invalidate);
         this.observer=new ResizeObserver(this.invalidate);this.observer.observe(this);
@@ -187,19 +210,31 @@ function diagram(id) {
     }
     disconnectedCallback(){
       this.connected=false;
+      this.entranceObserver?.disconnect();clearTimeout(this.entranceTimer);
+      // Reconnecting an already-started entrance shows the completed diagram.
+      if(this.entranceStarted)this.entranceComplete=true;
       removeEventListener('scroll',this.queue);removeEventListener('resize',this.invalidate);
       this.motion.removeEventListener('change',this.invalidate);
       document.fonts?.removeEventListener('loadingdone',this.invalidate);
       this.shadowRoot.removeEventListener('click',this.onClick);this.observer?.disconnect();
       cancelAnimationFrame(this.frameId);this.frameId=0;
     }
-    attributeChangedCallback(name,oldValue,value){if(oldValue!==value&&this.connected){this.render();this.invalidate();}}
+    attributeChangedCallback(name,oldValue,value){
+      if(oldValue===value||!this.connected)return;
+      if(name==='animation'){
+        removeEventListener('scroll',this.queue);
+        if(!this.entranceEnabled)addEventListener('scroll',this.queue,{passive:true});
+      }
+      this.render();this.invalidate();
+    }
     invalidate(){
       if(this.mainDiagram)this.mainDiagram.geometryKey=null;
       if(this.staticDiagram)this.staticDiagram.geometryKey=null;
       this.queue();
     }
     render(){
+      this.entranceObserver?.disconnect();clearTimeout(this.entranceTimer);
+      if(this.entranceStarted)this.entranceComplete=true;
       this.variant=variants.includes(this.getAttribute('variant'))?this.getAttribute('variant'):'wheel';
       const assetBase=new URL(this.getAttribute('asset-base')||'./assets/',document.baseURI).href.replace(/\/?$/,'/');
       if(window.FontFace&&document.fonts){
@@ -214,7 +249,7 @@ function diagram(id) {
       this.offset=Math.max(0,parseFloat(this.getAttribute('header-offset'))||0);
       this.style.setProperty('--header-offset',this.offset+'px');
       const id='inbrnd-'+(++serial),level=Math.min(6,Math.max(1,parseInt(this.getAttribute('heading-level'),10)||2)),heading='h'+level,subheading='h'+Math.min(6,level+1);
-      this.shadowRoot.innerHTML=`<style>${this.openingEnabled?CSS+OPENING_CSS:SECTION_CSS}</style>
+      this.shadowRoot.innerHTML=`<style>${this.openingEnabled?CSS+OPENING_CSS:SECTION_CSS}${this.entranceEnabled?ENTRANCE_CSS:''}</style>
         ${this.openingEnabled?`<section class="opening-hero" aria-labelledby="${id}-headline"><div class="opening-copy"><h1 id="${id}-headline">Career as a Brand System™</h1><p>A structured approach to turning your experience into clear positioning, credible signals, and compounding opportunities.</p></div><a class="scroll-cue" href="#system">Scroll to explore the system<svg viewBox="0 0 32 48" aria-hidden="true"><path d="M16 4 V35" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><path d="M-13 -8 L2 0 L-13 8 Z" transform="translate(16 37) rotate(90)" fill="currentColor"/></svg></a></section>`:''}
         <div class="sr-only accessible-summary"><${heading}>The system in motion</${heading}><p>${SUMMARY}</p><ol>${STAGES.map(s=>`<li><${subheading}>${s[0]}</${subheading}><p>${s[1]} ${s[2]}</p></li>`).join('')}</ol><p>${PAYOFF}</p></div>
         <section class="journey" id="system" aria-label="The system in motion"><div class="frame">
@@ -245,11 +280,40 @@ function diagram(id) {
       }
 
       this.mainDiagram=bindDiagram(r.querySelector('.main-diagram'));this.staticDiagram=bindDiagram(r.querySelector('.static-diagram'));
+      if(this.entranceEnabled)this.setupEntrance();
       this.queue();
+    }
+    setupEntrance(){
+      paintDiagram(this.mainDiagram,1,true);
+      this.shadowRoot.querySelector('.payoff').style.opacity=1;
+      this.mainDiagram.parts.forEach((part,i)=>part.style.setProperty('--entrance-delay',`${.5+i*.22}s`));
+      if(this.entranceComplete||this.motion.matches||!window.IntersectionObserver){
+        this.finishEntrance();return;
+      }
+      this.journey.classList.add('entrance-pending');
+      this.entranceObserver=new IntersectionObserver(entries=>{
+        if(!entries.some(entry=>entry.isIntersecting&&entry.intersectionRatio>=.3))return;
+        this.entranceStarted=true;
+        this.entranceObserver.disconnect();
+        this.journey.classList.replace('entrance-pending','entrance-running');
+        this.entranceTimer=setTimeout(()=>this.finishEntrance(),2300);
+      },{threshold:.3});
+      this.entranceObserver.observe(this.journey);
+    }
+    finishEntrance(){
+      this.entranceComplete=true;
+      this.entranceObserver?.disconnect();clearTimeout(this.entranceTimer);
+      this.journey.classList.remove('entrance-pending','entrance-running');
     }
     queue(){if(this.isConnected&&!this.frameId)this.frameId=requestAnimationFrame(this.renderFrame);}
     renderFrame(){
       this.frameId=0;if(!this.isConnected||!this.journey)return;
+      if(this.entranceEnabled){
+        // Resize/font loads update the original endpoint geometry, never the clock.
+        paintDiagram(this.mainDiagram,1,true);
+        if(this.motion.matches)this.finishEntrance();
+        return;
+      }
       const available=innerHeight-this.offset;
       // At short/zoomed sizes an unpinned complete framework is more readable.
       const compact=available<=480||(this.clientWidth<=900&&available<680);
