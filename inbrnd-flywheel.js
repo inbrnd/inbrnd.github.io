@@ -97,6 +97,13 @@ function diagram(id) {
     const radius=289+13/2+12;
     d.title.setAttribute('d',arc(radius,-155,-25));
     d.momentumPath.setAttribute('d',arc(radius+ringSize*.728,155,25));
+    // Only /framework phones: move letters inward before measuring arrow gaps.
+    const host=d.el.getRootNode().host;
+    const mobileFramework=host.hasAttribute('data-framework-page')&&host.clientWidth<=600;
+    d.nodes.forEach((node,i)=>{
+      const x=point(210,-90+i*72)[0]+(mobileFramework?(i===3?34:i===1?-22:0):0);
+      node.firstElementChild.setAttribute('x',x);
+    });
     const bounds=d.nodes.map(n=>n.firstElementChild.getBBox());
     const gap=14, halfStroke=parseFloat(getComputedStyle(d.paths[0]).strokeWidth)/2;
     const distance=(p,b)=>Math.hypot(Math.max(b.x-p[0],0,p[0]-b.x-b.width),Math.max(b.y-p[1],0,p[1]-b.y-b.height));
@@ -156,6 +163,15 @@ function diagram(id) {
 @media(prefers-reduced-motion:reduce){.opening-copy,.scroll-cue{will-change:auto}}
 
 .scroll-cue{text-decoration:none}.opening-hero svg{overflow:visible}
+`;
+  // Framework phones only. Keep the original reveal distance, then release the
+  // entire wheel/caption frame after ~18svh of fully opaque reading time.
+  const FRAMEWORK_MOBILE_CSS = `
+@container(max-width:600px){
+ :host([data-framework-page]) .journey{height:calc(100svh + 480svh)}
+ :host([data-framework-page]) .caption-space{height:auto;min-height:60px;padding-top:6px}
+ :host([data-framework-page]) .payoff{position:relative;inset:auto}
+}
 `;
   // Homepage-only entrance: normal document flow and a single wall-clock sequence.
   const ENTRANCE_CSS = `
@@ -271,6 +287,8 @@ function diagram(id) {
         </section>
         <div class="tools"><button class="static-toggle" type="button" aria-pressed="false">Read without motion</button></div>
         `;
+      this.toggleAttribute('data-framework-page',!this.entranceEnabled&&this.openingEnabled&&
+        this.getAttribute('content-mode')==='diagram'&&/^\/framework\/?$/.test(location.pathname));
       const r=this.shadowRoot;
       this.journey=r.querySelector('.journey');this.frame=r.querySelector('.frame');this.linear=r.querySelector('.linear');
       this.panels=[...r.querySelectorAll('.lesson')];
@@ -287,6 +305,8 @@ function diagram(id) {
         r.querySelector('.main-diagram svg defs').insertAdjacentHTML('beforeend', `<linearGradient id="${id}-opening" gradientUnits="userSpaceOnUse" x1="${point(289,-126.15)[0]}" y1="51" x2="${point(289,-53.85)[0]}" y2="51"><stop stop-color="#FBFAF7"/><stop offset=".5" stop-color="#D5A5B1"/><stop offset="1" stop-color="#FBFAF7"/></linearGradient>`);
       }
 
+      const frameworkStyle=document.createElement('style');
+      frameworkStyle.textContent=FRAMEWORK_MOBILE_CSS;r.append(frameworkStyle);
       this.mainDiagram=bindDiagram(r.querySelector('.main-diagram'));this.staticDiagram=bindDiagram(r.querySelector('.static-diagram'));
       if(this.entranceEnabled)this.setupEntrance();
       this.queue();
@@ -338,7 +358,11 @@ function diagram(id) {
         return;
       }
       const rect=this.journey.getBoundingClientRect(),travel=this.journey.offsetHeight-this.frame.offsetHeight;
-      const raw=clamp((-rect.top+this.offset)/Math.max(1,travel));
+      // Shorten only the completed-state tail; all five reveal distances stay
+      // identical to the existing mobile opening. No timers or scroll interception.
+      const mobileFramework=this.hasAttribute('data-framework-page')&&this.clientWidth<=600;
+      const revealTravel=mobileFramework?travel*540/480:travel;
+      const raw=clamp((-rect.top+this.offset)/Math.max(1,revealTravel));
       const opening=this.openingEnabled;
       // The first idea emerges while the circle settles, so there is no handoff.
       const entrance=opening?1-Math.pow(1-clamp(raw/.17),2):1;
