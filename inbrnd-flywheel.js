@@ -149,7 +149,7 @@ function diagram(id) {
 .opening-copy h1{font-weight:400;font-size:clamp(36px,4.2vw,60px);letter-spacing:.02em;line-height:1.2;margin:12px auto 24px;text-wrap:balance}
 .opening-copy p{font-size:clamp(20px,2.1vw,28px);line-height:1.45;max-width:890px;margin:0 auto;text-wrap:balance}
 .scroll-cue{position:absolute;top:62%;left:50%;transform:translateX(-50%);width:max-content;font-size:20px;pointer-events:auto;will-change:opacity}
-.scroll-cue svg{display:block;width:27px;height:43px;margin:16px auto}
+.scroll-cue svg{display:block;width:16px;height:24px;margin:16px auto}
 
 /* Motion-free reading has normal document flow, no long pinned scroll. */
 :host([data-static]) .opening-hero{position:relative;height:auto;min-height:0;padding-bottom:40px}
@@ -276,7 +276,7 @@ function diagram(id) {
       this.style.setProperty('--header-offset',this.offset+'px');
       const id='inbrnd-'+(++serial),level=Math.min(6,Math.max(1,parseInt(this.getAttribute('heading-level'),10)||2)),heading='h'+level,subheading='h'+Math.min(6,level+1);
       this.shadowRoot.innerHTML=`<style>${this.openingEnabled?CSS+OPENING_CSS:SECTION_CSS}${this.entranceEnabled?ENTRANCE_CSS:''}</style>
-        ${this.openingEnabled?`<section class="opening-hero" aria-labelledby="${id}-headline"><div class="opening-copy"><h1 id="${id}-headline">Career as a Brand System™</h1><p>A structured approach to turning your experience into clear positioning, credible signals, and compounding opportunities.</p></div><a class="scroll-cue" href="#system">Scroll to explore the system<svg viewBox="0 0 32 48" aria-hidden="true"><path d="M16 4 V35" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><path d="M-13 -8 L2 0 L-13 8 Z" transform="translate(16 37) rotate(90)" fill="currentColor"/></svg></a></section>`:''}
+        ${this.openingEnabled?`<section class="opening-hero" aria-labelledby="${id}-headline"><div class="opening-copy"><h1 id="${id}-headline">Career as a Brand System™</h1><p>A structured approach to turning your experience into clear positioning, credible signals, and compounding opportunities.</p></div><a class="scroll-cue" href="#system">Scroll to explore the system<svg viewBox="0 0 16 24" aria-hidden="true" focusable="false"><path d="M8 .75 V22.75 M1.5 16.25 L8 22.75 L14.5 16.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></section>`:''}
         <div class="sr-only accessible-summary"><${heading}>The system in motion</${heading}><p>${SUMMARY}</p><ol>${STAGES.map(s=>`<li><${subheading}>${s[0]}</${subheading}><p>${s[1]} ${s[2]}</p></li>`).join('')}</ol><p>${PAYOFF}</p></div>
         <section class="journey" id="system" aria-label="The system in motion"><div class="frame">
           <div class="copy" aria-hidden="true">${STAGES.map((s,i)=>`<article class="lesson" data-lesson="${i}"><h2>${s[0]}</h2><p class="question">${s[1]}</p><p class="description">${s[2]}</p></article>`).join('')}</div>
