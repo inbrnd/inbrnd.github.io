@@ -163,6 +163,14 @@ function diagram(id) {
 .frame{position:relative;top:auto;height:auto;grid-template-columns:1fr;grid-template-rows:auto}
 .copy,.linear,.tools{display:none}
 .visual-wrap{grid-column:1;grid-row:1;width:100%;align-self:center}
+/* Desktop homepage preview only; retain the existing animation and text sizing. */
+@media(min-width:1024px){
+ :host{margin-bottom:-16px}
+ :host([content-mode=diagram]) .diagram{width:min(93%,calc((100svh - var(--header-offset) - 125px)*.93));max-width:837px}
+ .frame{padding-bottom:0}
+ .caption-space{height:66px;padding-top:6px;margin-top:-10px}
+ .payoff{top:6px}
+}
 .entrance-pending .node,.entrance-pending .connection,.entrance-pending .arrowhead,
 .entrance-pending .rose-segment,.entrance-pending .authority,.entrance-pending .momentum,
 .entrance-pending .payoff{opacity:0!important}
