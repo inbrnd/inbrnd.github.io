@@ -168,8 +168,10 @@ function diagram(id) {
   // entire wheel/caption frame after ~18svh of fully opaque reading time.
   const FRAMEWORK_MOBILE_CSS = `
 @container(max-width:600px){
- :host([data-framework-page]) .journey{height:calc(100svh + 480svh)}
- :host([data-framework-page]) .caption-space{height:auto;min-height:60px;padding-top:6px}
+ :host([data-framework-page]) .journey{height:calc(100svh + 480svh + 16px)}
+ /* 22px from the SVG box includes the curved letters extending below it.
+    With the existing font metrics this leaves 24–32px of visible breathing room. */
+ :host([data-framework-page]) .caption-space{height:auto;min-height:60px;padding-top:22px}
  :host([data-framework-page]) .payoff{position:relative;inset:auto}
 }
 `;
@@ -353,7 +355,8 @@ function diagram(id) {
       // Shorten only the completed-state tail; all five reveal distances stay
       // identical to the existing mobile opening. No timers or scroll interception.
       const mobileFramework=this.hasAttribute('data-framework-page')&&this.clientWidth<=600;
-      const revealTravel=mobileFramework?travel*540/480:travel;
+      // The extra 16px belongs to the shared exit, not the five-stage reveal clock.
+      const revealTravel=mobileFramework?(travel-16)*540/480:travel;
       const raw=clamp((-rect.top+this.offset)/Math.max(1,revealTravel));
       const opening=this.openingEnabled;
       // The first idea emerges while the circle settles, so there is no handoff.
